@@ -37,11 +37,15 @@ def attach_events(client, processor):
 def load_token():
     """Load the token from a local private file called `token`"""
     try:
-        with open('./token', encoding="UTF-8") as token_file:
+        with open("./token", encoding="UTF-8") as token_file:
             return token_file.read().strip()
     except FileNotFoundError:
-        print("Unable to start server, missing `token` file")
-        raise
+        try:
+            with open("/opt/pointsbot/token", encoding="UTF-8"):
+                return token_file.read().strip()
+        except FileNotFoundError:
+            print("Unable to start server, missing `token` file")
+            raise
 
 def init():
     """Initalize server."""
