@@ -30,8 +30,6 @@ def attach_events(client, processor):
                 response = "ERROR: " + str(exception)
 
             await message.channel.send(response)
-        else:
-            await message.channel.send("Ignoring.")
 
 
 def load_token():
