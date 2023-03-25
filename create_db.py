@@ -25,7 +25,7 @@ def create_tables(cursor):
             user TEXT PRIMARY KEY NOT NULL,
             amount INT NOT NULL,
             timestamp INTEGER NOT NULL
-        ) STRICT
+        )
     """)
     cursor.execute("""CREATE TABLE
         actions (
@@ -35,7 +35,7 @@ def create_tables(cursor):
             command TEXT NOT NULL,
             note TEXT NOT NULL,
             timestamp INTEGER NOT NULL
-        ) STRICT
+        )
     """)
 
 def run(args):
