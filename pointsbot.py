@@ -41,7 +41,7 @@ def load_token():
             return token_file.read().strip()
     except FileNotFoundError:
         try:
-            with open("/opt/pointsbot/token", encoding="UTF-8"):
+            with open("/opt/pointsbot/token", encoding="UTF-8") as token_file:
                 return token_file.read().strip()
         except FileNotFoundError:
             print("Unable to start server, missing `token` file")
