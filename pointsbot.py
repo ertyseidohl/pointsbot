@@ -7,6 +7,8 @@ import discord
 from pointsdb import PointsDB # pylint: disable=import-error
 from pointsprocessor import PointsProcessor, CommandException # pylint: disable=import-error
 
+use_opt = False # Hack lol
+
 def attach_events(client, processor):
     """Attach events to Discord client."""
 
@@ -40,6 +42,7 @@ def load_token():
     except FileNotFoundError:
         try:
             with open("/opt/pointsbot/token", encoding="UTF-8") as token_file:
+                use_opt = True # We are on the server :)
                 return token_file.read().strip()
         except FileNotFoundError:
             print("Unable to start server, missing `token` file")
@@ -52,7 +55,7 @@ def init():
     intents.members = True
     client = discord.Client(intents=intents)
     token = load_token()
-    points_db = PointsDB()
+    points_db = PointsDB(use_opt)
     points_processor = PointsProcessor(points_db)
 
     if token:
