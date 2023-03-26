@@ -47,7 +47,7 @@ class PointsDB:
             note=note)
 
         if deduct_from:
-            self.update_points(user_to, amount * -1)
+            self.update_points(user_from, amount * -1)
 
         self.update_points(user_to, amount)
 
@@ -112,5 +112,5 @@ class PointsDB:
         self.cursor.execute("""
             INSERT INTO points (user, amount, timestamp) VALUES (?, ?, STRFTIME('%s'))
             ON CONFLICT(user) DO
-            UPDATE SET amount = amount + ?, timestamp = STRFTIME('%s') WHERE user = ?
-        """, [user_to, amount, amount, user_to])
+            UPDATE SET amount = amount + ?, timestamp = STRFTIME('%s')
+        """, [user_to, amount, amount])
