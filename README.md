@@ -10,7 +10,7 @@ Run `python3 create_db.py` to create a new database file.
 
 If you want, you can run `python3 create_db.py --drop` to optionally drop any existing database. (Don't run this in prod!)
 
-You'll also need to create a file called `token` and put your Discord OAuth token in there as the only content.
+You'll also need to create a file called `token` and put your Discord OAuth token in there as the only content ([instructions for getting this token](https://discordpy.readthedocs.io/en/stable/discord.html)).
 
 You'll also need to `pip3 install discord` if it's not already installed.
 
@@ -35,10 +35,6 @@ After=multi-user.target
 Type=simple
 Restart=always
 ExecStart=/usr/bin/python3 /opt/pointsbot/pointsbot.py
-
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=pointsbot
 
 [Install]
 WantedBy=multi-user.target
