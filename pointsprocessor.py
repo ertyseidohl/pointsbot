@@ -34,7 +34,7 @@ class PointsProcessor:
             "!help": self.help,
             "!undo": self.undo,
             "!lead": self.lead,
-            "!wall": self.wallet
+            "!wall": self.wallet,
             "!bet ": self.bet
             }
         self.currency_symbol = currency_symbol
@@ -183,3 +183,7 @@ Letters in [square brackets] are optional - e.g. !gran and !grant are the same.
         if result is None:
             return f"<@{user}> has {self.currency_symbol}0"
         return f"<@{user}> has {self.currency_symbol}{result[1]}"
+
+    def bet(self, _):
+        """todo"""
+        raise NotImplementedError()
