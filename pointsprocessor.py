@@ -48,7 +48,9 @@ class PointsProcessor:
             command="!grant",
             note=parsed[3],
             deduct_from=False)
-        return f"<@{message.author.id}> granted {self.currency_symbol}{parsed[2]} to <@{parsed[1]}>!"
+        return (
+            f"<@{message.author.id}> granted {self.currency_symbol}{parsed[2]} "
+            f"to <@{parsed[1]}>!")
 
     def give(self, message):
         """Give points to one user from another."""
@@ -66,7 +68,9 @@ class PointsProcessor:
             command="!give",
             note=parsed[3],
             deduct_from=True)
-        return f"Gave {self.currency_symbol}{parsed[2]} from <@{message.author.id}> to <@{parsed[1]}>!"
+        return (
+            f"Gave {self.currency_symbol}{parsed[2]} from "
+            f"<@{message.author.id}> to <@{parsed[1]}>!")
 
     def history(self, message):
         """Retrive historic actions."""

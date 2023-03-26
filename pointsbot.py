@@ -8,7 +8,7 @@ import discord
 from pointsdb import PointsDB # pylint: disable=import-error
 from pointsprocessor import PointsProcessor, CommandException # pylint: disable=import-error
 
-currency_symbol = "ꙮ"
+CURRENCY_SYMBOL = "ꙮ"
 
 def attach_events(client, processor):
     """Attach events to Discord client."""
@@ -32,8 +32,8 @@ def attach_events(client, processor):
                 traceback.print_exc()
                 response = "ERROR: " + str(exception)
 
-            await message.channel.send(response)
-
+            await message.channel.send(response,
+                allowed_mentions=discord.AllowedMentions.none())
 
 def load_token():
     """Load the token from a local private file called `token`"""
@@ -52,7 +52,7 @@ def init():
     client = discord.Client(intents=intents)
     token = load_token()
     points_db = PointsDB()
-    points_processor = PointsProcessor(points_db=points_db, currency_symbol=currency_symbol)
+    points_processor = PointsProcessor(points_db=points_db, currency_symbol=CURRENCY_SYMBOL)
 
     if token:
         print("Starting Server!")
