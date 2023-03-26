@@ -104,13 +104,13 @@ class PointsDB:
         self.cursor.execute("""
             INSERT INTO actions
                 (user_from, user_to, amount, command, note, timestamp)
-                VALUES (?, ?, ?, ?, ?, unixepoch())
+                VALUES (?, ?, ?, ?, ?, STRFTIME('%s'))
         """, [user_from, user_to, amount, command, note])
 
     def update_points(self, user_to, amount):
         """Update the points table."""
         self.cursor.execute("""
-            INSERT INTO points (user, amount, timestamp) VALUES (?, ?, unixepoch())
+            INSERT INTO points (user, amount, timestamp) VALUES (?, ?, STRFTIME('%s'))
             ON CONFLICT(user) DO
-            UPDATE SET amount = amount + ?, timestamp = unixepoch() WHERE user = ?
+            UPDATE SET amount = amount + ?, timestamp = STRFTIME('%s') WHERE user = ?
         """, [user_to, amount, amount, user_to])
