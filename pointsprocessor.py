@@ -1,10 +1,23 @@
 """"Business" logic for pointsbot."""
 
-import re
+from dataclasses import dataclass
 from datetime import datetime
+import re
 
 class CommandException(Exception):
     """Something went wrong processing the command."""
+
+class UndoAuthor: # pylint: disable=too-few-public-methods
+    """Class for creating "fake" authors for undo commands."""
+    def __init__(self, user_id):
+        # Can't use dataclass since we're using id as a property.
+        self.id = user_id # pylint: disable=invalid-name
+
+@dataclass
+class UndoMessage:
+    """Data class for creating "fake" messages for undo commands."""
+    content: str
+    author: UndoAuthor
 
 class PointsProcessor:
     """Processor of points transactions."""
@@ -22,6 +35,7 @@ class PointsProcessor:
             "!undo": self.undo,
             "!lead": self.lead,
             "!wall": self.wallet
+            "!bet ": self.bet
             }
         self.currency_symbol = currency_symbol
 
@@ -54,7 +68,7 @@ class PointsProcessor:
 
     def give(self, message):
         """Give points to one user from another."""
-        parsed = re.search(r"!give <@(\d+)> \$?(\d+) ?(.*)", message.content)
+        parsed = re.search(r"!(?:give|send) <@(\d+)> \$?(\d+) ?(.*)", message.content)
         if not parsed:
             raise CommandException(f"Failed to parse !give command. `{message.content}`")
         if message.author.id == int(parsed[1]):
@@ -112,14 +126,14 @@ class PointsProcessor:
         return f"""
 Pointsbot (by Erty)
 
-Letters in [square brackets] are optional - e.g. !hist and !history are the same.
+Letters in [square brackets] are optional - e.g. !gran and !grant are the same.
 
-!gran[t] @User 100 - Give @User {self.currency_symbol}100 from the bank.
+!gran[t] @User 100 [note] - Give @User {self.currency_symbol}100 from the bank (with optional note).
 
-!give @User 100 - Give @User {self.currency_symbol}100 of your money.
-!send @User 100 - Alias of !give.
+!give @User 100 [note] - Give @User {self.currency_symbol}100 of your money (with optional note).
+!send @User 100 [note] - Alias of !give.
 
-!take @User 100 - Take {self.currency_symbol}100 of @User's money and give it to the bank.
+!take @User 100 [note] - Take {self.currency_symbol}100 of @User's money and give it to the bank (with optional note).
 
 !help - Display this text.
 
@@ -135,9 +149,23 @@ Letters in [square brackets] are optional - e.g. !hist and !history are the same
 !hist[ory] 10 20 - Show 10 transactions starting 20 transactions ago.
         """
 
-    def undo(self, _):
+    def undo(self, message):
         """Undo the last action done by the current user."""
-        return "Sorry, not implemented yet!"
+        last_action = self.points_db.get_last_action(message.author.id)
+        user_from, user_to, amount, command, _, _ = last_action
+        if command == "!grant":
+            return ("Undoing !grant: " +
+                self.take(UndoMessage(f"!take <@{user_to}> {amount} undo",
+                    UndoAuthor(user_from))))
+        if command in ("!give", "!send"):
+            return ("Undoing !give/!send: " +
+                self.give(UndoMessage(f"!give <@{user_from}> {amount} undo",
+                    UndoAuthor(user_to))))
+        if command == "!take":
+            return ("Undoing !take: " +
+                self.grant(UndoMessage(f"!grant <@{user_to}> {amount} undo",
+                    UndoAuthor(user_from))))
+        return f"No undo command defined for {command}!"
 
     def lead(self, _):
         """Show the current leaderboard."""

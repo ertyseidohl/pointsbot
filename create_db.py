@@ -20,23 +20,36 @@ def drop_tables(cursor):
 def create_tables(cursor):
     """Create needed tables."""
     print("Creating tables")
-    cursor.execute("""CREATE TABLE
+    cursor.execute("""CREATE TABLE IF NOT EXISTS
+        bets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            amount INTEGER NOT NULL,
+            create_note TEXT NOT NULL,
+            winner_note TEXT NOT NULL,
+            winner TEXT NOT NULL,
+            create_timestamp INTEGER NOT NULL,
+            winner_timestamp INTEGER NOT NULL)
+        """)
+    cursor.execute("""CREATE TABLE IF NOT EXISTS
+        bets_users (
+            user INTEGER NOT NULL,
+            bet_id INTEGER NOT NULL)
+        """)
+    cursor.execute("""CREATE TABLE IF NOT EXISTS
         points (
             user TEXT PRIMARY KEY NOT NULL,
             amount INT NOT NULL,
-            timestamp INTEGER NOT NULL
-        )
-    """)
-    cursor.execute("""CREATE TABLE
+            timestamp INTEGER NOT NULL)
+        """)
+    cursor.execute("""CREATE TABLE IF NOT EXISTS
         actions (
             user_from TEXT NOT NULL,
             user_to TEXT NOT NULL,
             amount INTEGER NOT NULL,
             command TEXT NOT NULL,
             note TEXT NOT NULL,
-            timestamp INTEGER NOT NULL
-        )
-    """)
+            timestamp INTEGER NOT NULL)
+        """)
 
 def run(args):
     """Run requested db commands"""

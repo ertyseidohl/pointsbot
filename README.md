@@ -2,6 +2,11 @@
 
 By [Erty](https://erty.me)
 
+## Using Pointsbot
+
+You can send the `!help` command in any server where Pointsbot is hanging out (or a DM) to get an up-to-date list of commands.
+
+
 ## Installation / Development
 
 Download pointsbot using Git.

@@ -7,8 +7,6 @@ import sqlite3
 class PointsException(Exception):
     """Something went wrong granting points that was a "business" error."""
 
-SYSTEM = "__system__"
-
 class PointsDB:
     """Class for interfacing with the pointsbot database."""
 
@@ -75,9 +73,18 @@ class PointsDB:
             command=command,
             note=note)
 
-        self.update_points(user_to, amount)
+        self.update_points(user_to, -amount) # Note: Here's where we flip the amount
 
         self.connection.commit()
+
+    def get_last_action(self, user_id):
+        """Returns the last action by a given user."""
+        return self.cursor.execute("""
+            SELECT * FROM actions
+            WHERE user_from = ?
+            ORDER BY timestamp DESC
+            LIMIT 1
+            """, [user_id]).fetchone()
 
     def get_history(self, length, offset):
         """Return the latest $length actions, skipping $offset"""
@@ -96,7 +103,7 @@ class PointsDB:
     def get_balance(self, user_id):
         """Get the balance for a specific user"""
         return self.cursor.execute("""
-            SELECT * FROM POINTS WHERE user = ?
+            SELECT * FROM POINTS WHERE user = ? LIMIT 1
         """, [user_id]).fetchone()
 
     def add_action(self, *, user_from, user_to, amount, command, note):
@@ -114,3 +121,22 @@ class PointsDB:
             ON CONFLICT(user) DO
             UPDATE SET amount = amount + ?, timestamp = STRFTIME('%s')
         """, [user_to, amount, amount])
+
+    def add_bet(self, user_a, user_b, amount, note):
+        """Update the bets table."""
+        self.cursor.execute("""
+            INSERT INTO bets (user_a, user_b, amount, note, timestamp)
+            VALUES (?, ?, ?, ?, STRFTIME('%s'))
+        """, [user_a, user_b, amount, note])
+
+    def get_bets(self):
+        """Return all bets. TODO add limit, offset"""
+        return self.cursor.execute("""
+            SELECT * FROM bets
+        """).fetchall()
+
+    def get_bet(self, bet_id):
+        """Get a specific bet by ID"""
+        return self.cursor.execute("""
+            SELECT * FROM bets WHERE id = ?
+        """, [bet_id]).fetchone()
