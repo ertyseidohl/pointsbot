@@ -80,14 +80,13 @@ class PointsProcessor:
         def ellipse(string):
             return string[:20] + "..." if len(string) > 20 else string
         return "\n".join(
-            [(f"{datetime.utcfromtimestamp(h[5]).strftime('%Y-%m-%d %H:%M:%S')} "
+            (f"{datetime.utcfromtimestamp(h[5]).strftime('%Y-%m-%d %H:%M:%S')} "
               f"<@{h[0]}> -> "
               f"<@{h[1]}> "
               f"${h[2]} "
               f"({h[3]})" +
               ((' \"' + (ellipse(h[4]) + '\"') if h[4] else '')))
-                for h in history]
-            )
+            for h in history)
 
     def take(self, message):
         """Takes points from the user and gives them to the bank"""
@@ -138,7 +137,7 @@ Letters in [square brackets] are optional - e.g. !hist and !history are the same
     def lead(self, _):
         """Show the current leaderboard."""
         leaderboard = self.points_db.get_leaderboard(10, 0)
-        return leaderboard
+        return "\n".join(f"<@{l[0]}>: ${l[1]}" for l in leaderboard)
 
     def wallet(self, message):
         """Show balance for current user."""
