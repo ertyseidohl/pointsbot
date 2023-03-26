@@ -1,5 +1,7 @@
 """Interface with the pointsbot database."""
 
+import os
+
 import sqlite3
 
 class PointsException(Exception):
@@ -10,8 +12,8 @@ SYSTEM = "__system__"
 class PointsDB:
     """Class for interfacing with the pointsbot database."""
 
-    def __init__(self, use_opt):
-        self.connection = sqlite3.connect("/opt/pointsbot/pointsbot.db" if use_opt else "pointsbot.db")
+    def __init__(self):
+        self.connection = sqlite3.connect(os.path.dirname(__file__) + "/pointsbot.db")
         self.cursor = self.connection.cursor()
 
     def grant_points(self, *, user_from, user_to, amount, command, note, deduct_from):

@@ -1,13 +1,12 @@
 """Python discord bot for granting and tracking points."""
 
+import os
 import traceback
 
 import discord
 
 from pointsdb import PointsDB # pylint: disable=import-error
 from pointsprocessor import PointsProcessor, CommandException # pylint: disable=import-error
-
-use_opt = False # Hack lol
 
 def attach_events(client, processor):
     """Attach events to Discord client."""
@@ -37,16 +36,11 @@ def attach_events(client, processor):
 def load_token():
     """Load the token from a local private file called `token`"""
     try:
-        with open("./token", encoding="UTF-8") as token_file:
+        with open(os.path.dirname(__file__) + "/token", encoding="UTF-8") as token_file:
             return token_file.read().strip()
     except FileNotFoundError:
-        try:
-            with open("/opt/pointsbot/token", encoding="UTF-8") as token_file:
-                use_opt = True # We are on the server :)
-                return token_file.read().strip()
-        except FileNotFoundError:
-            print("Unable to start server, missing `token` file")
-            raise
+        print("Unable to start server, missing `token` file")
+        raise
 
 def init():
     """Initalize server."""
@@ -55,7 +49,7 @@ def init():
     intents.members = True
     client = discord.Client(intents=intents)
     token = load_token()
-    points_db = PointsDB(use_opt)
+    points_db = PointsDB()
     points_processor = PointsProcessor(points_db)
 
     if token:
